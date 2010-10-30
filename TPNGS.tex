@@ -1,0 +1,162 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[latin1]{inputenc} 
+\usepackage{a4wide}
+\usepackage[T1]{fontenc} 
+\usepackage[french]{babel} 
+\usepackage{url}
+\usepackage{pslatex} 
+\usepackage{color}
+\usepackage{graphicx} 
+\usepackage{listings}
+
+
+
+\newcommand{\click}[1]{``\texttt{#1}''}
+
+
+\lstset{% general command to set parameter(s) 
+basicstyle=\small,frame=single}
+\lstloadlanguages{bash}
+
+\title{TP analyse de données de séquençage nouvelle génération} 
+%\subtitle{Application à un génome bactérien}
+%\author{Valentin Loux} 
+\date{\today}
+
+\begin{document} 
+\selectlanguage{french}
+
+\maketitle 
+\section{Objectifs} 
+L'objectif du TP, à travers l'exemple de l'assemblage d'un souche bacterienne séquencée par NGS, est d'utiliser différents outils classiques d'analyse (assemblage, mapping, visualisation) et de vous permettre une première prise en main concrète de ce type de données. Nous ne balayerons pas tout les types de données ou toutes les analyses.
+
+Connectez vous sur la machine \verb=migale=, les données du TP sont dans le répertoire \verb=NGS_MIG/Data=.
+\begin{lstlisting}
+	ssh -XY migale
+	cd NGS_MIG/DATA
+	ls
+\end{lstlisting}
+
+Les scripts utilisés dans le TP sont dans le répértoire \verb=SCRIPTS=, les repertoires Train, Part1 et Part2 correspondent respectivement aux parties \ref{sec:qual}, \ref{sec:assd} et \ref{sec:assr} du TP. Dans chaque repertoire, un script bash \verb=runTest.sh= reprend les differentes commandes de l'exercice. Vous ne devez pas le lancer directement (cela serait trop facile ...) mais vous pouvez vous y référer si vous êtes perdus. 
+
+\section{Données, Qualité et Nettoyage}
+\label{sec:qual}
+Nous disposons de deux souches de \textit{Flavobacterium psychrophylum}, la souche THC0290 et la souche JIP02/86. La souche JIP a été produite par séquençage Sanger classique.La souche THC a été produite par séquençage SOLEXA single-end. Nous disposons de 50 millions de lectures de taille 100 bp. Le jeud de données a été réduit à 5 millions de Reads afin d'accelerer les calculs.
+
+\subsection{FASTQ}
+\label{sec:fastq}
+Le format FASTQ est un format textuel permettant de stocker à la fois la séquence biologique et les scores de qualité associés. Les nucleotides et les qualités sont encodés chacun par un caractère ascii. Historiquement, le format FASTQ a été créé par le Sanger Institute, mais ce format est largement utilisé par les sequenceurs Illumina ou Solid. Le problème est qu'il existe plusieurs variantes du format FASTQ, notamment pour la plateforme Solexa. Les outils prennent généralement en entrée des séquences au format fastq-sanger.
+Pour aller plus loin : \url{http://en.wikipedia.org/wiki/Fastq} et \cite{Cock} 
+
+\subsubsection{Passage du format FASTQ Illumina-1.3 au format FASTQ sanger}
+Nous allons travailler sur un sous ensemble de reads. Le fichiers \verb=Data/readsSangerTrain.fastq= contient des reads au format Sanger. A l'aide du script \verb=fastqQualityConverter.pl= (ecrit en Perl à l'aide des modules BioPerl) passer ce fichier au format FASTQ Illumina. Observer les différences
+en utilisant \verb=xxdiff=.
+\begin{lstlisting}
+	cd Train
+	perl ../Scripts/fastqQualityConverter.pl \
+	-i ../Data/readsSangerTrain.fastq -qi illumina \
+	-o Results/readsSangerToIllumina.fastq -qo illumina
+	
+	xxdiff ..Data/readsSangerTrain.fastq \
+	Results/readsSangerToIllumina.fastq
+\end{lstlisting}
+
+
+Passer les reads au format FASTQ-Solexa. Observer les différences.
+
+\begin{lstlisting}
+	perl ../Scripts/fastqQualityConverter.pl \
+	-i ../Data/readsSangerTrain.fastq -qi illumina \
+	-o Results/readsSangerToSolexa.fastq -qo solexa
+	\end{lstlisting}
+	
+	
+\subsubsection{Nettoyage}
+Le trimming, ou nettoyage des lectures de mauvaise qualité est une étape indispensable avant toute analyse. Cela permet de diminuer le nombre de lectures à traiter et de ne conserver que les parties des lectures de bonne qualité pour l'analyse. Il existe de nombreuses façon de filter ces lectures, nous allons utiliser une méthode de  trimming "adaptative". \textbf{TODO}.
+
+Trimmer les lectures de l'exercice précédent (au format Sanger) en filtrant les lectures dont une des bases à a un score inferieur à 10, dont la qualité moyenne est inférieure à 20, de taille (après trimming) inférieure à 20 et comprenant des N. 
+
+Observer les différences entre les lectures en entrée et en sortie.
+
+\begin{lstlisting}	
+	perl ../Scripts/adaptativeTrim.pl -q 10 -Q 20 -l 20 -N 0  \
+	-i ../Data/readsSangerTrain.fastq -o Results/
+\end{lstlisting}
+
+
+\section{Assemblage de Novo}
+\label{sec:assd}
+\subsection{Assemblage}
+Passer dans le répértoire \verb=Part1=. \verb=Velvet= est un outil d'assemblage de lectures courtes developpé à l'EBI. Velvet utilise les reads nettoyés au format FASTQ-Sanger selon la méthode présentée en \ref{sec:fastq}. Cette étape etant assez longue lorsqu'elle est appliquée à plusieurs millions de reads, utilisez le fichier \verb=Data/adaptativeTrim_readsSangerTHC.fastq= qui correspond aux reads bruts nettoyés.
+
+\verb=Velvet= a deux paramètres sensibles : la taille des hashs et la couverture attendue. \verb=Velvet= est composé de deux programmes. \verb=Velveth= et \verb=velvetg=.
+Un script, \verb=VelvetOptimiserNew.pl= permet d'optimiser ces paramètres en fonction de nos données et de critères tels que le N50, le nombre de paires de base dans les grands contigs, le nombre total de contigs, \ldots
+
+\verb=VelvetOptimiserNew.pl= lancer plusieurs assemblages en modifiant les paramètres puis choisit celui qui convient le mieux selon nos critères.
+Observer les différents critères de \verb=VelvetOptimiserNew.pl=.
+
+Lancer un assemblage en l'optimisant sur le N50, en allant d'un taille de hash de 33 à 35 (pour limiter le nombre d'iterations). Veiller à bien passer à \verb=velveth= les options précisant le type de lectures (single-end) et leur format (fastq). Préciser également l'option "amos\_file" à velvetg.
+
+Pendant que \verb=Velvet= assemble, vous pouvez lire sa documentation.
+
+
+\begin{lstlisting}	
+	perl ../Scripts/VelvetOptimiser/VelvetOptimiserNew.pl 
+	-p Results/readsTHCVelvetAssembly -s 33 -e 35 \
+	-f "-short -fastq ../Data/adaptativeTrim_readsSangerTHC.fastq"\
+	-o "-amos_file yes"
+\end{lstlisting}	
+
+
+\subsection{Visualisation de l'assemblage}
+
+Visualisation avec \verb=Hawkeye=. Il faut d'abord passer l'assemblage du format afg au format bnk. Cet assemblage au format bnk peut être visualisé dans \verb=Hawkeye=. En extraire les statistiques principales (nombre de contigs, N50,\ldots) 
+\begin{lstlisting}	
+	bank-transact -c -m velvet_asm.afg -b velvet.bnk
+	hawkeye velvet.bnk
+\end{lstlisting}
+
+
+\section{Assemblage sur référence}
+\label{sec:assr}
+
+Passer dans le repertoire \verb=Part2=. \verb=Velvet= peut s'aider d'un reference pour l'assemblage (module Colombus). Pour cela, il faut lui fournir au format SAM trié, le résultat du mapping des reads sur un génome de reference.
+
+\subsection{Mapping}
+Utilisation de \verb=bwa=. Dans notre cas, la souche de référence est la souche JIP. Aligner les reads sur la réference, trier le fichier sam.
+
+
+\begin{lstlisting}
+bwa index ../Data/refJIP.fasta
+bwa aln refJIP.fasta ../Data/readsSangerTHC.fastq  > THCVSJIP.sai
+bwa samse refJIP.fasta THCVSJIP.sai ../Data/readsSangerTHC.fastq \
+  > THCVSJIP.sam
+
+sort THCVSJIP.sam > THCVSJIP.sorted.sam
+
+\end{lstlisting}
+\subsection{Visualisation du mapping}
+Utilisation de \verb=Tablet=.
+
+\subsection{Assemblage}
+Reprendre les mêmes valeurs de K-mer et de couverture que dans la précédente partie. Passer à velveth la reference et le mapping. Lancer l'assemblage.
+
+\begin{lstlisting}
+	velveth readsTHCVelvetAssemblyRef 35 \
+	-reference ../Data/refJIP.fasta \
+	-short -sam THCVSJIP.sam.sorted.sam 
+	
+	velvetg readsTHCVelvetAssemblyRef -amos_file yes \
+	-exp_cov 31 -cov_cutoff 4.8
+\end{lstlisting}
+
+Visualiser l'assemblage, en extraire ses principales caractéristiques et le comparer avec l'assemblage de-novo.
+
+\section{Alignement sur référence}
+Utiliser l'outil \verb=Move Contigs= de \verb=Mauve= pour aligner les deux assemblages sur l'assemblage reel (fait à partir de séquençage Sanger, fichier \verb=refTHC.fasta=). Comparer les deux assemblages. 
+
+\bibliography{TPNGS}{}
+\bibliographystyle{plain}
+\end{document}
+
+
