@@ -1,0 +1,138 @@
+
+%  AppliNGS
+%
+%  Created by Valentin Loux on 2010-10-31.
+%  Copyright (c) 2010 INRA. All rights reserved.
+
+\documentclass{beamer}
+
+
+
+\mode<presentation>
+{
+  \usetheme{Antibes}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+% Use utf-8 encoding for foreign characters
+\usepackage[french]{babel} 
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{pgf}
+\usepackage{pgfarrows,pgfnodes,pgfshade}
+
+% Package for including code in the document
+ \usepackage{listings}
+ \usepackage{url}
+
+
+%%%%%% Begin Document %%%%%%%%%%%%%
+
+\title[Applications NGS] % (optional, use only with long paper titles)
+{Applications biologiques des nouvelles techniques de séquençage}
+
+%\subtitle
+%{Une plateforme d'annotation de génomes bactériens}
+
+\author[V. Loux] % (optional, use only with lots of authors)
+{Valentin~Loux}
+
+\institute[INRA-MIG] % (optional, but mostly needed)
+{
+  Unité Mathématique, Informatique et Génome\\
+  INRA, Jouy en Josas
+}
+
+\date[2 Novembre 2010] % (optional, should be abbreviation of conference name)
+{Formation NGS 2010}
+
+ \pgfdeclareimage[height=0.5cm]{miglogo}{miglogo}
+ \logo{\pgfuseimage{miglogo}}
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Plan}
+  \tableofcontents
+  % You might wish to add the option [pausesections]
+\end{frame}
+
+
+\section{Introduction}
+
+\section{Sequençage/Resequençage massif} % (fold)
+\label{sec:sequençage_resequençage_massif}
+
+
+\subsection{Séquençage classique} % (fold)
+\label{sub:séquençage_classique_}
+
+% subsection s�quen�age_classique_ (end)
+
+\subsection{Découverte de variants} % (fold)
+\label{sub:decouverte_de_variants}
+
+% subsection decouverte_de_variants (end)
+
+\subsection{Métagénomique} % (fold)
+\label{sub:métagénomique}
+
+% subsection m�tag�nomique (end)
+
+% section sequen�age_resequen�age_massif (end)
+
+\section{Capture et ChIP-Seq} % (fold)
+\label{sec:capture_et_chip_seq}
+
+% section capture_et_chip_seq (end)
+
+\section{rnaSeq et DGE} % (fold)
+\label{sec:rnaseq_dge}
+
+% section rnaseq_dge (end)
+
+\section{Méthylation} % (fold)
+\label{sec:methylation}
+
+% section methylation (end)
+
+\subsection{Génomes complets}
+\begin{frame}
+  \frametitle{Génomes complets}
+  \begin{itemize}
+  \item Au 13 octobre 2010, 1379\footnote{\url{http://www.genomesonline.org/}} génomes complets publiés~:
+    \begin{itemize}
+    \item 94 archées (\textit{Aeropyrum pernix},\ldots)
+    \item 1152 bacteries (\textit{Bacillus subtils}, \textit{Lactococcus lactis},\ldots)
+    \item 153 eucaryotes (\textit{Saccharomyces cerevisiae},\textit{Mus musculus}, \textit{Rattus norvegicus}, \textit{Homo sapiens},\ldots)
+    \end{itemize}
+  \item 5150 génomes procaryotes et 1610 eucaryotes en cours. (245 métagénomes).
+  \end{itemize}
+\end{frame}
+\end{document}
+
