@@ -1,25 +1,71 @@
+%
+%  TPNGS
+%
+%  Created by Valentin Loux on 2010-10-31.
+%  Copyright (c) 2010 INRA. All rights reserved.
+
 \documentclass[a4paper,12pt]{article}
-\usepackage[latin1]{inputenc} 
+% Use utf-8 encoding for foreign characters
+\usepackage[utf8]{inputenc}
+
+% Setup for fullpage use
+%\usepackage{fullpage}
+
 \usepackage{a4wide}
-\usepackage[T1]{fontenc} 
+
 \usepackage[french]{babel} 
-\usepackage{url}
-\usepackage{pslatex} 
-\usepackage{color}
-\usepackage{graphicx} 
+
+% Uncomment some of the following if you use the features
+%
+% Running Headers and footers
+%\usepackage{fancyhdr}
+
+% Multipart figures
+%\usepackage{subfigure}
+
+% More symbols
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{latexsym}
+
+% Surround parts of graphics with box
+\usepackage{boxedminipage}
+
+% Package for including code in the document
 \usepackage{listings}
 
 
+\usepackage{url}
+
+
+% This is now the recommended way for checking for PDFLaTeX:
+\usepackage{ifpdf}
+
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\else
+\usepackage{graphicx}
+\fi
 
 \newcommand{\click}[1]{``\texttt{#1}''}
 
 
+%lstlistings parameters
 \lstset{% general command to set parameter(s) 
 basicstyle=\small,frame=single}
 \lstloadlanguages{bash}
 
-\title{TP analyse de données de séquençage nouvelle génération} 
-%\subtitle{Application à un génome bactérien}
+
+\ifpdf
+\DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+\else
+\DeclareGraphicsExtensions{.eps, .jpg}
+\fi
+
+%%%%%%% Begin Documentt %%%%%%%%%%
+
+\title{TP analyse de donnÃ©es de sÃ©quenÃ§age nouvelle gÃ©nÃ©ration} 
+%\subtitle{Application Ã  un gÃ©nome bactÃ©rien}
 %\author{Valentin Loux} 
 \date{\today}
 
@@ -28,28 +74,30 @@ basicstyle=\small,frame=single}
 
 \maketitle 
 \section{Objectifs} 
-L'objectif du TP, à travers l'exemple de l'assemblage d'un souche bactérienne séquencée par NGS, est d'utiliser différents outils classiques d'analyse (assemblage, mapping, visualisation) et de vous permettre une première prise en main concrète de ce type de données. Nous ne balayerons pas tout les types de données ou toutes les analyses.
+L'objectif du TP, Ã  travers l'exemple de l'assemblage d'un souche bactÃ©rienne sÃ©quencÃ©e par NGS, est d'utiliser diffÃ©rents outils classiques d'analyse (assemblage, mapping, visualisation) et de vous permettre une premiÃ¨re prise en main concrÃ¨te de ce type de donnÃ©es. Nous ne balayerons pas tout les types de donnÃ©es ou toutes les analyses.
 
-Connectez vous sur la machine \verb=migale=, les données du TP sont dans le répertoire \verb=NGS_MIG/Data=.
+Connectez vous sur la machine \verb=migale=, les donnÃ©es du TP sont dans le rÃ©pertoire \verb=NGS_MIG/Data=.
 \begin{lstlisting}
 	ssh -XY migale
 	cd NGS_MIG/DATA
 	ls
 \end{lstlisting}
 
-Les scripts utilisés dans le TP sont dans le répertoire \verb=SCRIPTS=, les répertoires Train, Part1 et Part2 correspondent respectivement aux parties \ref{sec:qual}, \ref{sec:assd} et \ref{sec:assr} du TP. Dans chaque repertoire, un script bash \verb=runTest.sh= reprend les différentes commandes de l'exercice. Vous ne devez pas le lancer directement (cela serait trop facile ...) mais vous pouvez vous y référer si vous êtes perdus. 
 
-\section{Données, Qualité et Nettoyage}
+
+Les scripts utilisÃ©s dans le TP sont dans le rÃ©pertoire \verb=SCRIPTS=, les rÃ©pertoires Train, Part1 et Part2 correspondent respectivement aux parties \ref{sec:qual}, \ref{sec:assd} et \ref{sec:assr} du TP. Dans chaque repertoire, un script bash \verb=runTest.sh= reprend les diffÃ©rentes commandes de l'exercice. Vous ne devez pas le lancer directement (cela serait trop facile ...) mais vous pouvez vous y rÃ©fÃ©rer si vous Ãªtes perdus. 
+
+\section{DonnÃ©es, QualitÃ© et Nettoyage}
 \label{sec:qual}
-Nous disposons de deux souches de \textit{Flavobacterium psychrophylum}, la souche THC0290 et la souche JIP02/86. La souche JIP a été produite par séquençage Sanger classique.La souche THC a été produite par séquençage SOLEXA single-end. Nous disposons de 50 millions de lectures de taille 100 bp. Le jeu de données a été réduit à 5 millions de Reads afin d'accélérer les calculs.
+Nous disposons de deux souches de \textit{Flavobacterium psychrophylum}, la souche THC0290 et la souche JIP02/86. La souche JIP a Ã©tÃ© produite par sÃ©quenÃ§age Sanger classique.La souche THC a Ã©tÃ© produite par sÃ©quenÃ§age SOLEXA single-end. Nous disposons de 50 millions de lectures de taille 100 bp. Le jeu de donnÃ©es a Ã©tÃ© rÃ©duit Ã  5 millions de Reads afin d'accÃ©lÃ©rer les calculs.
 
 \subsection{FASTQ}
 \label{sec:fastq}
-Le format FASTQ est un format textuel permettant de stocker à la fois la séquence biologique et les scores de qualité associés. Les nucléotides et les qualités sont encodés chacun par un caractère ascii. Historiquement, le format FASTQ a été créé par le Sanger Institute, mais ce format est largement utilisé par les séquenceurs Illumina ou Solid. Le problème est qu'il existe plusieurs variantes du format FASTQ, notamment pour la plateforme Solexa. Les outils prennent généralement en entrée des séquences au format fastq-sanger.
+Le format FASTQ est un format textuel permettant de stocker Ã  la fois la sÃ©quence biologique et les scores de qualitÃ© associÃ©s. Les nuclÃ©otides et les qualitÃ©s sont encodÃ©s chacun par un caractÃ¨re ascii. Historiquement, le format FASTQ a Ã©tÃ© crÃ©Ã© par le Sanger Institute, mais ce format est largement utilisÃ© par les sÃ©quenceurs Illumina ou Solid. Le problÃ¨me est qu'il existe plusieurs variantes du format FASTQ, notamment pour la plateforme Solexa. Les outils prennent gÃ©nÃ©ralement en entrÃ©e des sÃ©quences au format fastq-sanger.
 Pour aller plus loin : \url{http://en.wikipedia.org/wiki/Fastq} et \cite{Cock} 
 
 \subsubsection{Passage du format FASTQ Illumina-1.3 au format FASTQ sanger}
-Nous allons travailler sur un sous ensemble de lectures. Le fichiers \verb=Data/readsSangerTrain.fastq= contient des lectures au format Sanger. A l'aide du script \verb=fastqQualityConverter.pl= (écrit en Perl à l'aide des modules BioPerl) passer ce fichier au format FASTQ Illumina. Observer les différences
+Nous allons travailler sur un sous ensemble de lectures. Le fichiers \verb=Data/readsSangerTrain.fastq= contient des lectures au format Sanger. A l'aide du script \verb=fastqQualityConverter.pl= (Ã©crit en Perl Ã  l'aide des modules BioPerl) passer ce fichier au format FASTQ Illumina. Observer les diffÃ©rences
 en utilisant \verb=xxdiff=.
 \begin{lstlisting}
 	cd Train
@@ -62,7 +110,7 @@ en utilisant \verb=xxdiff=.
 \end{lstlisting}
 
 
-Passer les lectures au format FASTQ-Solexa. Observer les différences.
+Passer les lectures au format FASTQ-Solexa. Observer les diffÃ©rences.
 
 \begin{lstlisting}
 	perl ../Scripts/fastqQualityConverter.pl \
@@ -72,11 +120,11 @@ Passer les lectures au format FASTQ-Solexa. Observer les différences.
 	
 	
 \subsubsection{Nettoyage}
-Le trimming, ou nettoyage des lectures de mauvaise qualité est une étape indispensable avant toute analyse. Cela permet de diminuer le nombre de lectures à traiter et de ne conserver que les parties des lectures de bonne qualité pour l'analyse. Il existe de nombreuses façon de filtrer ces lectures, nous allons utiliser une méthode de  trimming "adaptative". \textbf{TODO}.
+Le trimming, ou nettoyage des lectures de mauvaise qualitÃ© est une Ã©tape indispensable avant toute analyse. Cela permet de diminuer le nombre de lectures Ã  traiter et de ne conserver que les parties des lectures de bonne qualitÃ© pour l'analyse. Il existe de nombreuses faÃ§on de filtrer ces lectures, nous allons utiliser une mÃ©thode de  trimming "adaptative". \textbf{TODO}.
 
-Trimmer les lectures de l'exercice précédent (au format Sanger) en filtrant les lectures dont une des bases à a un score inférieur à 10, dont la qualité moyenne est inférieure à 20, de taille (après trimming) inférieure à 20 et comprenant des N. 
+Trimmer les lectures de l'exercice prÃ©cÃ©dent (au format Sanger) en filtrant les lectures dont une des bases Ã  a un score infÃ©rieur Ã  10, dont la qualitÃ© moyenne est infÃ©rieure Ã  20, de taille (aprÃ¨s trimming) infÃ©rieure Ã  20 et comprenant des N. 
 
-Observer les différences entre les lectures en entrée et en sortie.
+Observer les diffÃ©rences entre les lectures en entrÃ©e et en sortie.
 
 \begin{lstlisting}	
 	perl ../Scripts/adaptativeTrim.pl -q 10 -Q 20 -l 20 -N 0  \
@@ -87,15 +135,15 @@ Observer les différences entre les lectures en entrée et en sortie.
 \section{Assemblage de Novo}
 \label{sec:assd}
 \subsection{Assemblage}
-Passer dans le répertoire \verb=Part1=. \verb=Velvet= est un outil d'assemblage de lectures courtes développé à l'EBI. Velvet utilise les reads nettoyés au format FASTQ-Sanger selon la méthode présentée en \ref{sec:fastq}. Cette étape étant assez longue lorsqu'elle est appliquée à plusieurs millions de lectures, utilisez le fichier \verb=Data/adaptativeTrim_readsSangerTHC.fastq= qui correspond aux lectures brutes nettoyées.
+Passer dans le rÃ©pertoire \verb=Part1=. \verb=Velvet= est un outil d'assemblage de lectures courtes dÃ©veloppÃ© Ã  l'EBI. Velvet utilise les reads nettoyÃ©s au format FASTQ-Sanger selon la mÃ©thode prÃ©sentÃ©e en \ref{sec:fastq}. Cette Ã©tape Ã©tant assez longue lorsqu'elle est appliquÃ©e Ã  plusieurs millions de lectures, utilisez le fichier \verb=Data/adaptativeTrim_readsSangerTHC.fastq= qui correspond aux lectures brutes nettoyÃ©es.
 
-\verb=Velvet= a deux paramètres sensibles : la taille des hashs et la couverture attendue. \verb=Velvet= est composé de deux programmes. \verb=Velveth= et \verb=velvetg=.
-Un script, \verb=VelvetOptimiserNew.pl= permet d'optimiser ces paramètres en fonction de nos données et de critères tels que le N50, le nombre de paires de base dans les grands contigs, le nombre total de contigs, \ldots
+\verb=Velvet= a deux paramÃ¨tres sensibles : la taille des hashs et la couverture attendue. \verb=Velvet= est composÃ© de deux programmes. \verb=Velveth= et \verb=velvetg=.
+Un script, \verb=VelvetOptimiserNew.pl= permet d'optimiser ces paramÃ¨tres en fonction de nos donnÃ©es et de critÃ¨res tels que le N50, le nombre de paires de base dans les grands contigs, le nombre total de contigs, \ldots
 
-\verb=VelvetOptimiserNew.pl= lancer plusieurs assemblages en modifiant les paramètres puis choisit celui qui convient le mieux selon nos critères.
-Observer les différents critères de \verb=VelvetOptimiserNew.pl=.
+\verb=VelvetOptimiserNew.pl= lancer plusieurs assemblages en modifiant les paramÃ¨tres puis choisit celui qui convient le mieux selon nos critÃ¨res.
+Observer les diffÃ©rents critÃ¨res de \verb=VelvetOptimiserNew.pl=.
 
-Lancer un assemblage en l'optimisant sur le N50, en allant d'un taille de hash de 33 à 35 (pour limiter le nombre d'iterations). Veiller à bien passer à \verb=velveth= les options précisant le type de lectures (single-end) et leur format (fastq). Préciser également l'option "amos\_file" à velvetg.
+Lancer un assemblage en l'optimisant sur le N50, en allant d'un taille de hash de 33 Ã  35 (pour limiter le nombre d'iterations). Veiller Ã  bien passer Ã  \verb=velveth= les options prÃ©cisant le type de lectures (single-end) et leur format (fastq). PrÃ©ciser Ã©galement l'option "amos\_file" Ã  velvetg.
 
 Pendant que \verb=Velvet= assemble, vous pouvez lire sa documentation.
 
@@ -110,20 +158,20 @@ Pendant que \verb=Velvet= assemble, vous pouvez lire sa documentation.
 
 \subsection{Visualisation de l'assemblage}
 
-Visualisation avec \verb=Hawkeye=. Il faut d'abord passer l'assemblage du format afg au format bnk. Cet assemblage au format bnk peut être visualisé dans \verb=Hawkeye=. En extraire les statistiques principales (nombre de contigs, N50,\ldots) 
+Visualisation avec \verb=Hawkeye=. Il faut d'abord passer l'assemblage du format afg au format bnk. Cet assemblage au format bnk peut Ãªtre visualisÃ© dans \verb=Hawkeye=. En extraire les statistiques principales (nombre de contigs, N50,\ldots) 
 \begin{lstlisting}	
 	bank-transact -c -m velvet_asm.afg -b velvet.bnk
 	hawkeye velvet.bnk
 \end{lstlisting}
 
 
-\section{Assemblage sur référence}
+\section{Assemblage sur rÃ©fÃ©rence}
 \label{sec:assr}
 
-Passer dans le répertoire \verb=Part2=. \verb=Velvet= peut s'aider d'un référence pour l'assemblage (module Colombus). Pour cela, il faut lui fournir au format SAM trié, le résultat du mapping des reads sur un génome de référence.
+Passer dans le rÃ©pertoire \verb=Part2=. \verb=Velvet= peut s'aider d'un rÃ©fÃ©rence pour l'assemblage (module Colombus). Pour cela, il faut lui fournir au format SAM triÃ©, le rÃ©sultat du mapping des reads sur un gÃ©nome de rÃ©fÃ©rence.
 
 \subsection{Mapping}
-Utilisation de \verb=bwa=. Dans notre cas, la souche de référence est la souche JIP. Aligner les reads sur la référence, trier le fichier sam.
+Utilisation de \verb=bwa=. Dans notre cas, la souche de rÃ©fÃ©rence est la souche JIP. Aligner les reads sur la rÃ©fÃ©rence, trier le fichier sam.
 
 
 \begin{lstlisting}
@@ -139,7 +187,7 @@ sort THCVSJIP.sam > THCVSJIP.sorted.sam
 Utilisation de \verb=Tablet=.
 
 \subsection{Assemblage}
-Reprendre les mêmes valeurs de K-mer et de couverture que dans la précédente partie. Passer à velveth la référence et le mapping. Lancer l'assemblage.
+Reprendre les mÃªmes valeurs de K-mer et de couverture que dans la prÃ©cÃ©dente partie. Passer Ã  velveth la rÃ©fÃ©rence et le mapping. Lancer l'assemblage.
 
 \begin{lstlisting}
 	velveth readsTHCVelvetAssemblyRef 35 \
@@ -150,10 +198,10 @@ Reprendre les mêmes valeurs de K-mer et de couverture que dans la précédente par
 	-exp_cov 31 -cov_cutoff 4.8
 \end{lstlisting}
 
-Visualiser l'assemblage, en extraire ses principales caractéristiques et le comparer avec l'assemblage de-novo.
+Visualiser l'assemblage, en extraire ses principales caractÃ©ristiques et le comparer avec l'assemblage de-novo.
 
-\section{Alignement sur référence}
-Utiliser l'outil \verb=Move Contigs= de \verb=Mauve= pour aligner les deux assemblages sur l'assemblage réel (fait à partir de séquençage Sanger, fichier \verb=refTHC.fasta=). Comparer les deux assemblages. 
+\section{Alignement sur rÃ©fÃ©rence}
+Utiliser l'outil \verb=Move Contigs= de \verb=Mauve= pour aligner les deux assemblages sur l'assemblage rÃ©el (fait Ã  partir de sÃ©quenÃ§age Sanger, fichier \verb=refTHC.fasta=). Comparer les deux assemblages. 
 
 \bibliography{TPNGS}{}
 \bibliographystyle{plain}
