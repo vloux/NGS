@@ -72,6 +72,8 @@
 
 
 \begin{document}
+	
+	
 \begin{frame}
   \titlepage
 \end{frame}
@@ -85,54 +87,194 @@
 
 \section{Introduction}
 
-\section{Sequençage/Resequençage massif} % (fold)
+\begin{frame}
+  \frametitle{Applications des NGS}
+	\begin{itemize}
+		\item Les nouvelles techniques de sequençage offrent des possibilités en terme d'expérience et d'échelle quasi inconnue jusqu'à maintenant.
+		\item	Cela renouvelle les approches en génomique, génomique comparée, diagnostique médical.\ldots
+	\end{itemize}
+\end{frame}
+
+
+\section{Sequençage ADN} % (fold)
 \label{sec:sequençage_resequençage_massif}
+
 
 
 \subsection{Séquençage classique} % (fold)
 \label{sub:séquençage_classique_}
 
+
+
+\begin{frame}
+	\frametitle{Séquençage génomes}
+\begin{itemize}
+	\item Changement d'échelle dans le séquençage
+	\item Etudes populationelles : 10, 20 ou 100 souches
+	\item Problèmes récurrents de moyens informatiques et bioinformatiques
+	\item Généralement, pas de finishing
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}
+	\frametitle{GEBA}
+\begin{itemize}
+\item Projet du DOE - JGI
+\item But : remplir les "trous" dans l'arbre des espèces bactériennes
+\item Projet pilote avec une centaine de génomes
+\item Annotation faite par des étudiants
+\end{itemize}
+\end{frame}
+
 % subsection s�quen�age_classique_ (end)
 
-\subsection{Découverte de variants} % (fold)
+\subsection{Recherche de variants (SNPs et mutations)} % (fold)
 \label{sub:decouverte_de_variants}
+\begin{frame}
+	\frametitle{1000 genomes project}
+\begin{itemize}
+\item A pour but de trouver tous les variants présents dans au moins 1\% de la population étudiée.
+\item Projet pilote avec~: 
+\begin{itemize}
+	\item 160 individus en basse couverture (4x) 
+	\item 6 individus en couverture haute (40 x)
+\end{itemize}
+\item Prévoient de séquencer 2500 individus.
+\end{itemize}
+\tiny{1000 Genomes Project Consortium et al. A map of human genome variation from population-scale sequencing. Nature (2010)}
+\end{frame}
+
 
 % subsection decouverte_de_variants (end)
 
 \subsection{Métagénomique} % (fold)
 \label{sub:métagénomique}
 
+\begin{frame}
+	\frametitle{Métagénomique}
+\begin{itemize}
+	\item Etudes de la diversité microbienne d'échantillons environnementaux~:
+	\begin{itemize}
+		\item Sols (éventuellement pollués)
+		\item Boue d'épurations
+		\item Océan
+		\item Estomac, bouche, \ldots
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Métagenome intestinal}
+\begin{itemize}
+	\item "Autre" génome
+	\item 124 individus européens
+	\item 576,7 Gbase de séquences
+	\item  3.3 millions de gènes microbiens non-redondants
+\end{itemize}
+\tiny{Qin et al. A human gut microbial gene catalogue established by metagenomic sequencing. Nature (2010)}
+\end{frame}
+
+
+
+\subsection{Capture, enrichissement et séquencage d'exons} % (fold)
+\label{sub:subsection_name}
+
+
+
+\begin{frame}
+	\frametitle{Capture, enrichissement et sequencage d'exons}
+		\center{\includegraphics[width=\textwidth]{capture}}
+		\tiny{Albert et al. Direct selection of human genomic loci by microarray hybridization. Nat Methods (2007)}
+\end{frame}
+
+
+% subsection subsection_name (end)
 % subsection m�tag�nomique (end)
 
 % section sequen�age_resequen�age_massif (end)
 
-\section{Capture et ChIP-Seq} % (fold)
+
+
+% subsection chip_seq_et_m�thylation (end)
+\section{ChIP-Seq et Méthylation} % (fold)
 \label{sec:capture_et_chip_seq}
+
+\subsection{CHIP-Seq} % (fold)
+%\label{sub:chip_seq_et_m�thylation}
+\begin{frame}
+	\frametitle{ChIP-SEQ}
+		\center{\includegraphics[width=\textwidth]{chipseq}}
+		\tiny{© V. Boeva}\\
+		\tiny{Jothi et al. Genome-wide identification of in vivo protein-DNA binding sites from ChIP-Seq data.\\ Nucleic Acids Res (2008)}
+\end{frame}
+
+
+\subsection{Méthylation} % (fold)
+\label{sub:méthylation}
+
+
+\begin{frame}
+	\frametitle{Methylation}
+		\center{\includegraphics[width=\textwidth]{methylation}}
+\tiny{Edwards et al. Chromatin and sequence features that define the fine and gross structure of genomic methylation patterns. Genome Res (2010)}
+\end{frame}
+
+% subsection m�thylation (end)
+
+
+% Figure S1. Methyl-MAPS technique for whole-genome methylation analysis. Five methylation sensitive restriction enzymes (RE), that cut only unmethylated CpG sites, and McrBC, a methylation dependent endonuclease that cuts only methylated CpG sites, are used to fractionate the genome into methylated and unmethylated compartments, respectively. Millions of paired end-tags are sequenced for each compartment. Tag pairs are mapped to the genome and methylation state is assigned to end and interior CpG sites as appropriate. The tables show the number of CpG, McrBC, and RE sites found in the genome and in CpG islands in human (hg18) and mouse (mm9) genomes
 
 % section capture_et_chip_seq (end)
 
-\section{rnaSeq et DGE} % (fold)
+\section{Transcriptomique} % (fold)
 \label{sec:rnaseq_dge}
+\subsection{Transcriptomique} % (fold)
+\label{sub:transcriptomique}
 
+
+\begin{frame}
+	\frametitle{RNASeq}
+\begin{itemize}
+	\item eucaryotes : capture des mRNA par la queue polyA
+	\item procaryotes : dépletion des rRNA par des kites enzymatiques
+	\item rtPCR puis séquençage
+\end{itemize}
+\end{frame}
+% subsection transcriptomique (end)
+
+\subsection{Digital Gene Expression} % (fold)
+\label{sub:digital_gene_expression}
+
+% subsection digital_gene_expression (end)
+\begin{frame}
+	\frametitle{DGE}
+		\center{\includegraphics[width=\textwidth]{dge}}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{DGE VS RNASeq}
+		\center{\includegraphics[width=\textwidth]{rnaseqVSDGE}}
+\end{frame}
 % section rnaseq_dge (end)
 
-\section{Méthylation} % (fold)
-\label{sec:methylation}
 
-% section methylation (end)
+\section{Conclusion} % (fold)
+\label{sec:conclusion}
 
-\subsection{Génomes complets}
+% section conclusion (end)
 \begin{frame}
-  \frametitle{Génomes complets}
-  \begin{itemize}
-  \item Au 13 octobre 2010, 1379\footnote{\url{http://www.genomesonline.org/}} génomes complets publiés~:
-    \begin{itemize}
-    \item 94 archées (\textit{Aeropyrum pernix},\ldots)
-    \item 1152 bacteries (\textit{Bacillus subtils}, \textit{Lactococcus lactis},\ldots)
-    \item 153 eucaryotes (\textit{Saccharomyces cerevisiae},\textit{Mus musculus}, \textit{Rattus norvegicus}, \textit{Homo sapiens},\ldots)
-    \end{itemize}
-  \item 5150 génomes procaryotes et 1610 eucaryotes en cours. (245 métagénomes).
-  \end{itemize}
+	\frametitle{Conclusions}
+	\begin{itemize}
+		\item L'arrivé des nouvelles techniques de sequençage a permis le passage à des echelles insoupçonées de techniques existantes (methaylation, rnaSeq, 1000 genomes,\ldots)
+		\item De nouveaux types d'experience (CHIP-Seq, Exon Capture) 
+		\item De nouvelles questions de recherches en bioinformatique et statistique
+		\item De nouveaux défis informatiques\ldots
+	\end{itemize}
 \end{frame}
-\end{document}
 
+\end{document}

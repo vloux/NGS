@@ -94,7 +94,7 @@ Nous disposons de deux souches de \textit{Flavobacterium psychrophylum}, la souc
 \subsection{FASTQ}
 \label{sec:fastq}
 Le format FASTQ est un format textuel permettant de stocker à la fois la séquence biologique et les scores de qualité associés. Les nucléotides et les qualités sont encodés chacun par un caractère ascii. Historiquement, le format FASTQ a été créé par le Sanger Institute, mais ce format est largement utilisé par les séquenceurs Illumina ou Solid. Le problème est qu'il existe plusieurs variantes du format FASTQ, notamment pour la plateforme Solexa. Les outils prennent généralement en entrée des séquences au format fastq-sanger.
-Pour aller plus loin : \url{http://en.wikipedia.org/wiki/Fastq} et \cite{Cock} 
+Pour aller plus loin : \url{http://en.wikipedia.org/wiki/Fastq} et \cite{Cock:2009p1945} 
 
 \subsubsection{Passage du format FASTQ Illumina-1.3 au format FASTQ sanger}
 Nous allons travailler sur un sous ensemble de lectures. Le fichiers \verb=Data/readsSangerTrain.fastq= contient des lectures au format Sanger. A l'aide du script \verb=fastqQualityConverter.pl= (écrit en Perl à l'aide des modules BioPerl) passer ce fichier au format FASTQ Illumina. Observer les différences
