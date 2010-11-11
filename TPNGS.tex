@@ -169,11 +169,12 @@ Visualisation avec \verb=Hawkeye=. Il faut d'abord passer l'assemblage du format
 \section{Assemblage sur référence}
 \label{sec:assr}
 
-Passer dans le répertoire \verb=Part2=. \verb=Velvet= peut s'aider d'une référence pour l'assemblage (module Colombus). Pour cela, il faut lui fournir au format SAM trié, le résultat du mapping des lectures sur un génome de référence.
+Passer dans le répertoire \verb=Part2=. \verb=Velvet= peut s'aider d'une référence pour l'assemblage (module Colombus). Pour cela, il faut lui fournir au format SAM trié, le résultat du mapping des lectures sur un génome de référence. Nous allons utiliser deux outils de mapping différents, \verb=bowtie= et \verb=bwa=
 
 \subsection{Mapping}
-Utilisation de \verb=bwa=. Dans notre cas, la souche de référence est la souche JIP. Aligner les reads sur la référence, trier le fichier sam.
 
+\subsubsection{bwa}
+Utilisation de \verb=bwa=. Dans notre cas, la souche de référence est la souche JIP. Aligner les reads sur la référence.
 
 \begin{lstlisting}
 bwa index ../Data/refJIP.fasta
@@ -184,6 +185,42 @@ bwa samse refJIP.fasta THCvsJIP.sai ../Data/readsSangerTHC.fastq \
 sort THCvsJIP.sam > THCvsJIP.sorted.sam
 
 \end{lstlisting}
+
+\subsubsection{Bowtie}
+
+\begin{lstlisting}
+	bowtie-build -f ../Data/Refs/refJIP.fasta refJIP
+	bowtie --sam -v 3 -k 200 -f refJIP \
+	../Data/Reads/readsTHCTrimmed.fasta THCvsJIP.sam
+\end{lstlisting}
+
+\subsection{{\tt samtools}}
+
+{\tt samtools} est un ensemble d'outils permettant de manipuler les fichiers issus d'un alignment. {\tt samtools} travaille sur des fichiers de type SAM/BAM. Le format BAM est une version binaire du format SAM, qui lui est un format textuel (lisible par les humains). {\tt samtools} propose plusieurs outils pour transformer les fichiers SAM en BAM, faire des statistiques, visualiser un alignement ou générer la distance entre le read et le morceau de référence sur lequel il est aligné.
+
+\subsubsection*{Création d'un fichier BAM (trié)}
+\begin{lstlisting}
+samtools faidx ../Data/Refs/refJIP.fasta
+samtools view -bt ../Data/Refs/refJIP.fasta.fai \
+refJIP.sam > refJIP.bam
+samtools sort refJIP.bam refJIP.sort
+samtools index refJIP.sort.bam
+\end{lstlisting}
+
+\subsubsection*{Statistiques sur les alignements}
+\begin{lstlisting}
+samtools idxstats refJIP.sort.bam
+\end{lstlisting}
+Format : nom de la séquence, longueur, nombre de lectures alignées, nombre de lectures non-alignées.
+
+\subsubsection*{Visualisation (au format texte) des alignements}
+\begin{lstlisting}
+samtools tview refJIP.sort.bam
+\end{lstlisting}
+Tapez q pour sortir de tview.
+
+
+
 \subsection{Visualisation du mapping}
 Utilisation de \verb=Tablet=.
 
@@ -210,6 +247,7 @@ Utiliser l'outil \verb=Move Contigs= de \verb=Mauve= pour aligner les deux assem
 	\item Velvet : \url{http://www.ebi.ac.uk/~zerbino/velvet/}
 	\item Hawkeye : \url{http://sourceforge.net/apps/mediawiki/amos/index.php?title=Hawkeye}
 	\item bwa : \url{http://bio-bwa.sourceforge.net/}
+	\item bowtie : \url{http://bowtie-bio.sourceforge.net}
 	\item SAMtools : \url{http://samtools.sourceforge.net/}
 	\item Tablet : \url{http://bioinf.scri.ac.uk/tablet/}
 	\item Mauve : \url{http://asap.ahabs.wisc.edu/mauve-aligner/}
