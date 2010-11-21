@@ -65,17 +65,17 @@ basicstyle=\small,frame=single}
 
 %%%%%%% Begin Documentt %%%%%%%%%%
 
-\title{TP analyse de données de séquençage nouvelle génération} 
+\title{TP Analyse de données de séquençage nouvelle génération} 
 %\subtitle{Application à un génome bactérien}
 %\author{Valentin Loux} 
-\date{\today}
+\date{25 novembre 2010}
 
 \begin{document} 
 \selectlanguage{french}
 
 \maketitle 
 \section{Objectifs} 
-L'objectif du TP, à travers l'exemple de l'assemblage d'un souche bactérienne séquencée par NGS, est d'utiliser différents outils classiques d'analyse (assemblage, mapping, visualisation) et de vous permettre une première prise en main concrète de ce type de données. Nous ne balayerons pas tout les types de données ou toutes les analyses.
+L'objectif du TP, à travers l'exemple de l'assemblage d'un souche bactérienne séquencée par NGS, est d'utiliser différents outils classiques d'analyse (assemblage, mapping, visualisation) et de vous permettre une première prise en main concrète de ce type de données. Nous ne balayerons pas tous les types de données ou toutes les analyses.
 
 Connectez vous sur la machine \verb=migale=, les données du TP sont dans le répertoire \verb=NGS_MIG/=.
 \begin{lstlisting}
@@ -86,24 +86,24 @@ Connectez vous sur la machine \verb=migale=, les données du TP sont dans le ré
 
 
 
-Les scripts utilisés dans le TP sont dans le répertoire \verb=Scripts=, les répertoires Part2, Part3 et Part4 correspondent respectivement aux parties \ref{sec:qual}, \ref{sec:assd} et \ref{sec:assr} du TP. Dans chaque répertoire, un script bash \verb=runXXX.sh= reprend les différentes commandes de l'exercice. Vous ne devez pas le lancer directement (cela serait trop facile ...) mais vous pouvez vous y référer si vous êtes perdus. Les données sont dans le répertoire \verb=Data=.G
+Les scripts utilisés dans le TP sont dans le répertoire \verb=Scripts=, les répertoires Part2, Part3 et Part4 correspondent respectivement aux parties \ref{sec:qual}, \ref{sec:assd} et \ref{sec:assr} du TP. Dans chaque répertoire, un script bash \verb=runXXX.sh= reprend les différentes commandes de l'exercice. Vous ne devez pas le lancer directement (cela serait trop facile ...) mais vous pouvez vous y référer si vous êtes perdus. Les données sont dans le répertoire \verb=Data=.
 
 
 \section{Données, Qualité et Nettoyage}
 \label{sec:qual}
-Nous disposons de deux souches de \textit{Flavobacterium psychrophilum}, la souche THC0290 et la souche JIP02/86. La souche JIP a été produite par séquençage Sanger classique.La souche THC a été produite par séquençage SOLEXA single-end. Nous disposons de 12 millions de lectures de taille 100 bp. Le jeu de données a été réduit à 5 millions de lectures afin d'accélérer les calculs.
+Nous disposons de deux souches de \textit{Flavobacterium psychrophilum}, la souche THC0290 et la souche JIP02/86. La souche JIP a été produite par séquençage Sanger classique.La souche THC a été produite par séquençage SOLEXA single-end. Nous disposons de 12 millions de lectures de taille 108 bp. Le jeu de données a été réduit à 5 millions de lectures afin d'accélérer les calculs.
 
 \subsection{FASTQ}
 \label{sec:fastq}
-Le format FASTQ est un format textuel permettant de stocker à la fois la séquence biologique et les scores de qualité associés. Les nucléotides et les qualités sont encodés chacun par un caractère ascii. Historiquement, le format FASTQ a été créé par le Sanger Institute, mais ce format est largement utilisé par les séquenceurs Illumina ou Solid. Le problème est qu'il existe plusieurs variantes du format FASTQ, notamment pour la plateforme Illumina. Les outils prennent généralement en entrée des séquences au format fastq-sanger.
+Le format FASTQ est un format textuel permettant de stocker à la fois la séquence biologique et les scores de qualité associés. Les nucléotides et les qualités sont encodés chacun par un caractère ascii. Historiquement, le format FASTQ a été créé par le Sanger Institute, mais ce format est largement utilisé par les séquenceurs Illumina ou Solid. Le problème est qu'il existe plusieurs variantes du format FASTQ, notamment pour la plateforme Illumina. Les outils prennent généralement en entrée des séquences au format FASTQ-Sanger.
 Pour aller plus loin : \url{http://en.wikipedia.org/wiki/Fastq} et \cite{Cock:2009p1945} 
 
-\subsubsection{Passage du format FASTQ Illumina-1.3 au format FASTQ sanger}
-Nous allons travailler sur un sous ensemble de lectures. Le fichiers \verb=Data/Reads/readsIlluminaTHCTrain.fastq= contient des lectures au format Illumina. A l'aide du script \verb=fastqQualityConverter.pl= (écrit en Perl à l'aide des modules BioPerl) passer ce fichier au format FASTQ Sanger. Observer les différences
+\subsubsection{Passage du format FASTQ-Illumina-1.3 au format FASTQ-Sanger}
+Nous allons travailler sur un sous ensemble de lectures. Le fichiers \verb=Data/Reads/readsIlluminaTHCTrain.fastq= contient des lectures au format FASTQ-Illumina. A l'aide du script \verb=fastqQualityConverter.pl= (écrit en Perl à l'aide des modules BioPerl) passer ce fichier au format FASTQ-Sanger. Observer les différences
 en utilisant \verb=xxdiff=.
 \begin{lstlisting}
 	cd Part2
-	../Scripts/fastqQualityConverter.pl \
+	perl ../Scripts/fastqQualityConverter.pl \
 	-i ../Data/Reads/readsIlluminaTHCTrain.fastq -qi illumina \
 	-o Results/readsSangerTHCTrain.fastq -qo sanger
 	
@@ -117,11 +117,11 @@ Passer les lectures au format FASTQ-Solexa. Observer les différences.
 \begin{lstlisting}
 	perl ../Scripts/fastqQualityConverter.pl \
 	-i ../Data/Reads/readsIlluminaTHCTrain.fastq -qi illumina \
-	-o Results/readsSolexaTHCTrain.fastq  -qo solexa
+	-o Results/readsSolexaTHCTrain.fastq -qo solexa
 	
 	xxdiff ../Data/Reads/readsIlluminaTHCTrain.fastq \
 	Results/readsSolexaTHCTrain.fastq
-	\end{lstlisting}
+\end{lstlisting}
 	
 	
 \subsubsection{Nettoyage}
@@ -129,10 +129,10 @@ Le trimming, ou nettoyage des lectures de mauvaise qualité est une étape indis
 
 Trimmer les lectures de l'exercice précédent (au format Sanger) en gardant les lectures dont toutes les bases ont  un score supérieur à 10, de taille (après trimming) supérieure à 20 bases, ne comprenant pas de N et dont la qualité moyenne (après trimming) et supérieure à 20. 
 
-Observer les différences entre les lectures en entrée et en sortie.
+Observer, toujours à l'aide de \verb=xxdiff=, les différences entre les lectures en entrée et en sortie.
 
 \begin{lstlisting}	
-	../Scripts/adaptativeTrim.pl -q 10 -Q 20 -l 20 -N 0  \
+	perl ../Scripts/adaptativeTrim.pl -q 10 -Q 20 -l 20 -N 0 \
 	-i Results/readsSangerTHCTrain.fastq -o Results/
 \end{lstlisting}
 
@@ -140,23 +140,23 @@ Observer les différences entre les lectures en entrée et en sortie.
 \section{Assemblage de Novo}
 \label{sec:assd}
 \subsection{Assemblage}
-Passer dans le répertoire \verb=Part3=. \verb=Velvet= est un outil d'assemblage de lectures courtes développé à l'EBI. Velvet utilise les lectures nettoyées au format FASTQ-Sanger selon la méthode présentée en \ref{sec:fastq}. Cette étape étant assez longue lorsqu'elle est appliquée à plusieurs millions de lectures, utilisez le fichier \verb=Data/adaptativeTrim_readsSangerTHC.fastq= qui correspond aux lectures brutes nettoyées.
+Passer dans le répertoire \verb=Part3=. \verb=Velvet= est un outil d'assemblage de lectures courtes développé à l'EBI. Velvet utilise les lectures nettoyées au format FASTQ-Sanger selon la méthode présentée en \ref{sec:fastq}. Cette étape étant assez longue lorsqu'elle est appliquée à plusieurs millions de lectures, utiliser le fichier \verb=Data/adaptativeTrim_readsSangerTHC.fastq= qui correspond aux lectures brutes nettoyées.
 
-\verb=Velvet= a deux paramètres sensibles : la taille des $k$-mers et la couverture attendue. \verb=Velvet= est composé de deux programmes. \verb=Velveth= et \verb=velvetg=.
+\verb=Velvet= a deux paramètres sensibles : la taille des $k$-mers et la couverture attendue. \verb=Velvet= est composé de deux programmes : \verb=velveth= et \verb=velvetg=.
 Un script, \verb=VelvetOptimiserNew.pl= permet d'optimiser ces paramètres en fonction de nos données et de critères tels que le N50, le nombre de paires de base dans les grands contigs, le nombre total de contigs, \ldots
 
-\verb=VelvetOptimiserNew.pl= lancer plusieurs assemblages en modifiant les paramètres puis choisit celui qui convient le mieux selon nos critères.
+\verb=VelvetOptimiserNew.pl= permet de lancer plusieurs assemblages en modifiant les paramètres puis choisit celui qui convient le mieux selon nos critères.
 Observer les différents critères de \verb=VelvetOptimiserNew.pl=.
 
-Lancer un assemblage en l'optimisant sur le critère N50, en allant d'un taille de k-mer de 33 à 35 (pour limiter le nombre d'itérations). Veiller à bien passer à \verb=velveth= les options précisant le type de lectures (single-end) et leur format (fastq). Préciser également l'option "amos\_file" à velvetg.
+Lancer un assemblage en l'optimisant sur le critère N50, en allant d'un taille de k-mer de 33 à 35 (pour limiter le nombre d'itérations). Veiller à bien passer à \verb=velveth= les options précisant le type de lectures (single-end) et leur format (fastq). Préciser également l'option "amos\_file yes" à \verb=velvetg=.
 
 Pendant que \verb=Velvet= assemble, vous pouvez lire sa documentation.
 
 
 \begin{lstlisting}	
-	perl ../Scripts/VelvetOptimiser/VelvetOptimiserNew.pl 
-	-p Results/readsTHCVelvetAssembly -s 33 -e 35 \
-	-f "-short -fastq ../Data/Reads/readsTHCTrimmed.fasta" \
+	perl ../Scripts/VelvetOptimiser/VelvetOptimiserNew.pl \
+	-p Results/THCVelvetAssembly -s 33 -e 35 \
+	-f "-short -fastq ../Data/Reads/readsSangerTHCTrimmed.fastq" \
 	-o "-amos_file yes"
 \end{lstlisting}	
 
@@ -166,9 +166,7 @@ Pendant que \verb=Velvet= assemble, vous pouvez lire sa documentation.
 Visualisation avec \verb=Hawkeye=. Il faut d'abord passer l'assemblage du format afg au format bnk. Cet assemblage au format bnk peut être visualisé dans \verb=Hawkeye=. En extraire les statistiques principales (nombre de contigs, N50,\ldots) 
 \begin{lstlisting}	
 	cd Results/THCVelvetAssembly_data_35/
-	
 	bank-transact -c -m velvet_asm.afg -b velvet.bnk
-
 	hawkeye velvet.bnk
 \end{lstlisting}
 
@@ -176,99 +174,102 @@ Visualisation avec \verb=Hawkeye=. Il faut d'abord passer l'assemblage du format
 \section{Assemblage sur référence}
 \label{sec:assr}
 
-Passer dans le répertoire \verb=Part4=. \verb=Velvet= peut s'aider d'une référence pour l'assemblage (module Colombus). Pour cela, il faut lui fournir au format SAM trié, le résultat du mapping des lectures sur un génome de référence. Nous allons utiliser deux outils de mapping différents, \verb=bowtie= et \verb=bwa=
+Passer dans le répertoire \verb=Part4=. \verb=Velvet= peut s'aider d'une référence pour l'assemblage (module Colombus). Pour cela, il faut lui fournir au format SAM trié, le résultat du mapping des lectures sur un génome de référence. Nous allons utiliser deux outils de mapping différents, \verb=Bowtie= et \verb=Bwa=.
 
 \subsection{Mapping}
 
-\subsubsection{\tt{bwa}}
-{\tt bwa} est un logiciel de mapping de lectures fréquemment utilisé dans la pratique. Dans notre cas, la souche de référence est la souche JIP. Nous allons aligner les lectures sur la référence. L'alignement se fait ici en 3 étapes : la création d'un index de la souche de référence, la création d'une structure intermédiaire qui aligne les lectures (émondés ou trimmés) sur la référence, et l'alignement en single-end proprement dit. Dans la troisième étape, {\tt bwa} prend en entrée le fichier FASTA de la souche de référence, le fichier binaire .sai (la structure intermédiaire) et les lectures trimmés, pour créer un fichier SAM.
+\subsubsection{\tt{Bwa}}
+{\tt Bwa} est un logiciel de mapping de lectures fréquemment utilisé dans la pratique. Dans notre cas, la souche de référence est la souche JIP. Nous allons aligner les lectures sur cette référence. L'alignement se fait ici en 3 étapes : d'abord la création d'un index de la souche de référence, puis celle d'une structure intermédiaire qui aligne les lectures (émondées ou trimmées) sur la référence, et enfin l'alignement en single-end proprement dit. Dans la troisième étape, {\tt Bwa} prend en entrée le fichier FASTA de la souche de référence, le fichier binaire .sai (la structure intermédiaire) et les lectures trimmées, afin de créer un fichier SAM.
+Créer en premier lieu un lien symbolique vers le fichier de référence : l'indexation de la souche de référence se fera à cet emplacement.
 
 \begin{lstlisting}
-	bwa index ../Data/Refs/refJIP.fasta
-
-	bwa aln ../Data/Refs/refJIP.fasta ../Data/readsSangerTHCTrimmed.fastq \
-	 > THCvsJIP.sai
-
-	bwa samse refJIP.fasta THCvsJIP.sai \
-	../Data/readsSangerTHCTrimmed.fastq > THCvsJIP.sam
+	cd Bwa/
+	ln -s ../../Data/Refs/refJIP.fasta refJIP.fasta
 	
-	sort THCvsJIP.sam > THCvsJIP.sorted.sam
+	bwa index refJIP.fasta
+	bwa aln refJIP.fasta \
+	../../Data/Reads/readsSangerTHCTrimmed.fastq \
+		> Results/THCvsJIP.sai
+	bwa samse refJIP.fasta Results/THCvsJIP.sai \
+	../../Data/Reads/readsSangerTHCTrimmed.fastq 
+		> Results/THCvsJIP.sam
 \end{lstlisting}
 
 \subsubsection{\tt{Bowtie}}
-{\tt bowtie} est un autre logiciel de mapping de lectures fréquemment utilisé. L'alignement se fait en deux étapes : la création d'un index et l'alignement proprement dit. Dans la deuxième ligne de commande, il est demandé à {\tt bowtie} de produire un alignement au format SAM, en autorisant au plus 3 mismatches et au plus 200 réponses possibles pour une lecture donnée. Les fichiers requis sont l'index créé à l'étape précédente et les lectures (émondés ou trimmés) au format FASTA.
+{\tt Bowtie} est un autre logiciel de mapping de lectures fréquemment utilisé. L'alignement se fait en deux étapes : la création d'un index et l'alignement proprement dit. Dans la deuxième ligne de commande, il est demandé à {\tt Bowtie} de produire un alignement au format SAM, en autorisant au plus 3 mismatches et au plus 200 réponses possibles pour une lecture donnée. Les fichiers requis sont l'index créé à l'étape précédente et les lectures (émondées ou trimmées) au format FASTA.
+Créer en premier lieu un lien symbolique vers le fichier de référence : l'indexation de la souche de référence se fera à cet emplacement.
 
 \begin{lstlisting}
-	bowtie-build -f ../Data/Refs/refJIP.fasta refJIP
-
-	bowtie --sam -v 3 -k 200 -f refJIP \
-	../Data/Reads/readsTHCTrimmed.fasta THCvsJIP.sam
+	cd Bowtie/
+	ln -s ../../Data/Refs/refJIP.fasta refJIP.fasta
 	
-	sort THCvsJIP.sam > THCvsJIP.sorted.sam
+	bowtie-build -f refJIP.fasta refJIP
+	bowtie --sam -v 3 -k 200 -f refJIP \
+	../../Data/Reads/readsSangerTHCTrimmed.fasta \
+	Results/THCvsJIP.sam
 \end{lstlisting}
 
 \subsection{{\tt Samtools}}
 
-{\tt samtools} est un ensemble d'outils permettant de manipuler les fichiers issus d'un alignement. {\tt samtools} travaille sur des fichiers de type SAM/BAM. Le format BAM est une version binaire du format SAM, qui lui est un format textuel (lisible par les humains). {\tt samtools} propose plusieurs outils pour transformer les fichiers SAM en BAM, faire des statistiques, visualiser un alignement ou générer la distance entre le read et le morceau de référence sur lequel il est aligné.
+{\tt samtools} est un ensemble d'outils permettant de manipuler les fichiers issus d'un alignement. {\tt samtools} travaille sur des fichiers de type SAM/BAM. Le format BAM est une version binaire du format SAM, qui lui est un format textuel (lisible par les humains). {\tt samtools} propose plusieurs outils pour transformer les fichiers SAM en BAM, faire des statistiques, visualiser un alignement ou encore générer la distance entre le read et le morceau de référence sur lequel il est aligné.
 
 \subsubsection*{Création d'un fichier BAM (trié)}
 \begin{lstlisting}
-samtools faidx ../Data/Refs/refJIP.fasta
-
-samtools view -bt ../Data/Refs/refJIP.fasta.fai \
-
-THCvsJIP.sam > THCvsJIP.bam
-
-samtools sort THCvsJIP.bam THCvsJIP.sort
-
-samtools index THCvsJIP.sort.bam
+	samtools faidx refJIP.fasta
+	samtools view -bt refJIP.fasta.fai \
+	Results/THCvsJIP.sam > Results/THCvsJIP.bam
+	samtools sort Results/THCvsJIP.bam Results/THCvsJIP.sort
+	samtools index Results/THCvsJIP.sort.bam
 \end{lstlisting}
 
 \subsubsection*{Statistiques sur les alignements}
 \begin{lstlisting}
-samtools idxstats THCvsJIP.sort.bam
+	samtools idxstats Results/THCvsJIP.sort.bam
 \end{lstlisting}
-Format : nom de la séquence, longueur, nombre de lectures alignées, nombre de lectures non-alignées.
+Format de sortie : nom de la séquence, longueur, nombre de lectures alignées, nombre de lectures non-alignées.
 
 \subsubsection*{Visualisation (au format texte) des alignements}
 \begin{lstlisting}
-samtools tview THCvsJIP.sort.bam
+	samtools tview Results/THCvsJIP.sort.bam
 \end{lstlisting}
-Tapez q pour sortir de tview.
+Taper q pour sortir de tview.
 
 
 
 \subsection{Visualisation du mapping}
-Visualisez le mapping avec \verb=Tablet=. Ce logiciel se lance en ligne de commande par l'instruction \verb=Tablet=. Une interface graphique permet d'explorer le mapping des lectures sur la référence. \verb=Tablet= peut prendre en entrée différents formats de mapping ou d'assemblage (sam, bam, maq, ace,\ldots). Ouvrez le mapping produit précédement à l'aide de \verb=Tablet= en lui précisant dans l'interface, le fichier de référence (refJIP.fasta) et le fichier d'alignement indexé (refJIP.sort.bam).
+Visualiser le mapping avec \verb=Tablet=. Ce logiciel se lance en ligne de commande par l'instruction \verb=tablet=. Une interface graphique permet d'explorer le mapping des lectures sur la référence. \verb=Tablet= peut prendre en entrée différents formats de mapping ou d'assemblage (sam, bam, maq, ace,\ldots). Ouvrir le mapping produit précédement à l'aide de \verb=Tablet= en lui précisant dans l'interface, d'abord le fichier de référence (\verb=refJIP.fasta=), puis le fichier d'alignement indexé (\verb=THCvsJIP.sort.bam=).
 
 \subsection{Assemblage}
-Reprendre les mêmes valeurs de $k$-mer et de couverture que dans la précédente partie. Passer à velveth la référence et le mapping. Lancer l'assemblage.
+Reprendre les mêmes valeurs de $k$-mer et de couverture que dans la précédente partie. Passer à velveth la référence et le mapping. Après avoir trié le fichier SAM de mapping, lancer l'assemblage.
 
 \begin{lstlisting}
-	velveth readsTHCVelvetAssemblyRef 35 \
-	-reference ../Data/refJIP.fasta \
-	-short -sam THCvsJIP.sorted.sam 
+	sort Results/THCvsJIP.sam > Results/THCvsJIP.sorted.sam
+
+	velveth Results/velvetAssemblyWithRef 35 \
+	-reference refJIP.fasta \
+	-short -sam Results/THCvsJIP.sorted.sam
 	
-	velvetg readsTHCVelvetAssemblyRef -amos_file yes \
-	-exp_cov 31 -cov_cutoff 4.8
+	velvetg Results/velvetAssemblyWithRef -amos_file yes \
+	-exp_cov 61 -cov_cutoff 11
 \end{lstlisting}
 
 Visualiser l'assemblage, en extraire ses principales caractéristiques  et le comparer avec l'assemblage de-novo.
 
 \section{Alignement sur référence}
-\verb=Mauve= est un outil d'alignement de génomes complet, qui permet également d'aligner les contigs d'un assemblage sur une référence. Il procède de façon itérative, par alignements successifs, en cherchant à aligner de manière colinéaire et optimale les contigs et la référence.
-Utiliser l'outil \verb=Move Contigs= (menu \verb=Tools=) de \verb=Mauve= (à lancer par la commande \verb=mauve= en ligne de commande) pour aligner les contigs issus de l'assemblage "lectures courtes" sur l'assemblage réel. Pour cela, donner comme référence l'assemblage réel (fait à partie de séquences Sanger, fichier \verb=refTHC.fasta= dans le dossier \verb=Data=) et comme "\verb=Draft=" le fichier de l'ensemble des contigs (fichier \verb=contigs.fa= dans le fichier de resultat de l'assemblage). Faire cela pour les deux assemblages, les comparer par rapport à la référence. 
+\verb=Mauve= est un outil d'alignement de génomes complets, qui permet également d'aligner les contigs d'un assemblage sur une référence. Il procède de façon itérative, par alignements successifs, en cherchant à aligner de manière colinéaire et optimale les contigs et la référence.
+Utiliser l'outil \verb=Move Contigs= (menu \verb=Tools=) de \verb=Mauve= (à lancer par la commande \verb=mauve= en ligne de commande) pour aligner les contigs issus de l'assemblage "lectures courtes" sur l'assemblage réel. Pour cela, donner comme référence l'assemblage réel (fait à partir de séquences Sanger, fichier \verb=refTHC.fasta= dans le dossier \verb=Data/Refs=) et comme "\verb=Draft=" le fichier de l'ensemble des contigs (fichier \verb=contigs.fa= dans le répertoire de resultat de l'assemblage). Faire cela pour les deux assemblages, les comparer par rapport à la référence. 
 
 \section{Outils et manuels}
 
 \begin{itemize}
-	\item Velvet : \url{http://www.ebi.ac.uk/~zerbino/velvet/}
+	\item Velvet : \url{http://www.ebi.ac.uk/~zerbino/velvet}
+	\item VelvetOptimiser : \url{http://bioinformatics.net.au/software.velvetoptimiser.shtml}
 	\item Hawkeye : \url{http://sourceforge.net/apps/mediawiki/amos/index.php?title=Hawkeye}
-	\item bwa : \url{http://bio-bwa.sourceforge.net/}
-	\item bowtie : \url{http://bowtie-bio.sourceforge.net}
-	\item SAMtools : \url{http://samtools.sourceforge.net/}
-	\item Tablet : \url{http://bioinf.scri.ac.uk/tablet/}
-	\item Mauve : \url{http://asap.ahabs.wisc.edu/mauve-aligner/}
+	\item Bwa : \url{http://bio-bwa.sourceforge.net}
+	\item Bowtie : \url{http://bowtie-bio.sourceforge.net}
+	\item SAMtools : \url{http://samtools.sourceforge.net}
+	\item Tablet : \url{http://bioinf.scri.ac.uk/tablet}
+	\item Mauve : \url{http://asap.ahabs.wisc.edu/mauve-aligner}
 	
 \end{itemize}
 
