@@ -80,7 +80,7 @@ L'objectif du TP, à travers l'exemple de l'assemblage d'un souche bactérienne 
 Connectez vous sur la machine \verb=migale=, les données du TP sont dans le répertoire \verb=NGS_MIG/=.
 \begin{lstlisting}
 	ssh -XY migale
-	cd NGS_MIG/
+	cd /home0/formation/stageXX/NGS_MIG/
 	ls
 \end{lstlisting}
 
@@ -91,7 +91,7 @@ Les scripts utilisés dans le TP sont dans le répertoire \verb=Scripts=, les r�
 
 \section{Données, Qualité et Nettoyage}
 \label{sec:qual}
-Nous disposons de deux souches de \textit{Flavobacterium psychrophilum}, la souche THC0290 et la souche JIP02/86. La souche JIP a été produite par séquençage Sanger classique.La souche THC a été produite par séquençage SOLEXA single-end. Nous disposons de 12 millions de lectures de taille 108 bp. Le jeu de données a été réduit à 5 millions de lectures afin d'accélérer les calculs.
+Nous disposons de deux souches de \textit{Flavobacterium psychrophilum}, la souche THC0290 et la souche JIP02/86. La souche JIP a été produite par séquençage Sanger classique.La souche THC a été produite par séquençage SOLEXA single-end. Nous disposons de 12 millions de lectures de taille 108 bp. 
 
 \subsection{FASTQ}
 \label{sec:fastq}
@@ -99,10 +99,12 @@ Le format FASTQ est un format textuel permettant de stocker à la fois la séque
 Pour aller plus loin : \url{http://en.wikipedia.org/wiki/Fastq} et \cite{Cock:2009p1945} 
 
 \subsubsection{Passage du format FASTQ-Illumina-1.3 au format FASTQ-Sanger}
-Nous allons travailler sur un sous ensemble de lectures. Le fichiers \verb=Data/Reads/readsIlluminaTHCTrain.fastq= contient des lectures au format FASTQ-Illumina. A l'aide du script \verb=fastqQualityConverter.pl= (écrit en Perl à l'aide des modules BioPerl) passer ce fichier au format FASTQ-Sanger. Observer les différences
+Nous allons travailler sur un sous ensemble de lectures. Le fichier \verb=Data/Reads/= \\
+\verb=readsIlluminaTHCTrain.fastq= contient des lectures au format FASTQ-Illumina. A l'aide du script \verb=fastqQualityConverter.pl= (écrit en Perl à l'aide des modules BioPerl) passer ce fichier au format FASTQ-Sanger. Observer les différences
 en utilisant \verb=xxdiff=.
 \begin{lstlisting}
 	cd Part2
+	mkdir Results
 	perl ../Scripts/fastqQualityConverter.pl \
 	-i ../Data/Reads/readsIlluminaTHCTrain.fastq -qi illumina \
 	-o Results/readsSangerTHCTrain.fastq -qo sanger
@@ -140,10 +142,11 @@ Observer, toujours à l'aide de \verb=xxdiff=, les différences entre les lectur
 \section{Assemblage de Novo}
 \label{sec:assd}
 \subsection{Assemblage}
-Passer dans le répertoire \verb=Part3=. \verb=Velvet= est un outil d'assemblage de lectures courtes développé à l'EBI. Velvet utilise les lectures nettoyées au format FASTQ-Sanger selon la méthode présentée en \ref{sec:fastq}. Cette étape étant assez longue lorsqu'elle est appliquée à plusieurs millions de lectures, utiliser le fichier \verb=Data/adaptativeTrim_readsSangerTHC.fastq= qui correspond aux lectures brutes nettoyées.
+Passer dans le répertoire \verb=Part3=. \verb=Velvet= est un outil d'assemblage de lectures courtes développé à l'EBI. Velvet utilise les lectures nettoyées au format FASTQ-Sanger selon la méthode présentée en \ref{sec:fastq}. Cette étape étant assez longue lorsqu'elle est appliquée à plusieurs millions de lectures, utiliser le fichier \verb=Data/readsSangerTHCTrimmed.fastq= qui correspond aux lectures brutes nettoyées.
 
 \verb=Velvet= a deux paramètres sensibles : la taille des $k$-mers et la couverture attendue. \verb=Velvet= est composé de deux programmes : \verb=velveth= et \verb=velvetg=.
-Un script, \verb=VelvetOptimiserNew.pl= permet d'optimiser ces paramètres en fonction de nos données et de critères tels que le N50, le nombre de paires de base dans les grands contigs, le nombre total de contigs, \ldots
+Un script,\\
+\verb=VelvetOptimiserNew.pl= permet d'optimiser ces paramètres en fonction de nos données et de critères tels que le N50, le nombre de paires de base dans les grands contigs, le nombre total de contigs, \ldots
 
 \verb=VelvetOptimiserNew.pl= permet de lancer plusieurs assemblages en modifiant les paramètres puis choisit celui qui convient le mieux selon nos critères.
 Observer les différents critères de \verb=VelvetOptimiserNew.pl=.
@@ -154,6 +157,8 @@ Pendant que \verb=Velvet= assemble, vous pouvez lire sa documentation.
 
 
 \begin{lstlisting}	
+	cd Part3
+	mkdir Results
 	perl ../Scripts/VelvetOptimiser/VelvetOptimiserNew.pl \
 	-p Results/THCVelvetAssembly -s 33 -e 35 \
 	-f "-short -fastq ../Data/Reads/readsSangerTHCTrimmed.fastq" \
@@ -183,16 +188,17 @@ Passer dans le répertoire \verb=Part4=. \verb=Velvet= peut s'aider d'une réfé
 Créer en premier lieu un lien symbolique vers le fichier de référence : l'indexation de la souche de référence se fera à cet emplacement.
 
 \begin{lstlisting}
-	cd Bwa/
-	ln -s ../../Data/Refs/refJIP.fasta refJIP.fasta
+	cd Part4
+	mkdir Results
+	ln -s ../../Data/Refs/refJIP.fasta Results/refJIP.fasta
 	
-	bwa index refJIP.fasta
-	bwa aln refJIP.fasta \
-	../../Data/Reads/readsSangerTHCTrimmed.fastq \
-		> Results/THCvsJIP.sai
-	bwa samse refJIP.fasta Results/THCvsJIP.sai \
-	../../Data/Reads/readsSangerTHCTrimmed.fastq 
-		> Results/THCvsJIP.sam
+	bwa index Results/refJIP.fasta
+	bwa aln -o 0 -n 3 Results/refJIP.fasta \
+	../Data/Reads/readsSangerTHCTrimmed.fastq \
+	> Results/THCvsJIP.sai
+	bwa samse Results/refJIP.fasta Results/THCvsJIP.sai \
+	../Data/Reads/readsSangerTHCTrimmed.fastq \
+	> Results/THCvsJIP.sam
 \end{lstlisting}
 
 \subsubsection{\tt{Bowtie}}
@@ -200,12 +206,13 @@ Créer en premier lieu un lien symbolique vers le fichier de référence : l'ind
 Créer en premier lieu un lien symbolique vers le fichier de référence : l'indexation de la souche de référence se fera à cet emplacement.
 
 \begin{lstlisting}
-	cd Bowtie/
-	ln -s ../../Data/Refs/refJIP.fasta refJIP.fasta
+	cd Part4
+	mkdir Results
+	ln -s ../../Data/Refs/refJIP.fasta Results/refJIP.fasta
 	
-	bowtie-build -f refJIP.fasta refJIP
-	bowtie --sam -v 3 -k 200 -f refJIP \
-	../../Data/Reads/readsSangerTHCTrimmed.fasta \
+	bowtie-build -f Results/refJIP.fasta Results/refJIP
+	bowtie --sam -v 3 -k 200 -f Results/refJIP \
+	../Data/Reads/readsSangerTHCTrimmed.fasta \
 	Results/THCvsJIP.sam
 \end{lstlisting}
 
@@ -215,8 +222,8 @@ Créer en premier lieu un lien symbolique vers le fichier de référence : l'ind
 
 \subsubsection*{Création d'un fichier BAM (trié)}
 \begin{lstlisting}
-	samtools faidx refJIP.fasta
-	samtools view -bt refJIP.fasta.fai \
+	samtools faidx Results/refJIP.fasta
+	samtools view -bt Results/refJIP.fasta.fai \
 	Results/THCvsJIP.sam > Results/THCvsJIP.bam
 	samtools sort Results/THCvsJIP.bam Results/THCvsJIP.sort
 	samtools index Results/THCvsJIP.sort.bam
@@ -246,7 +253,7 @@ Reprendre les mêmes valeurs de $k$-mer et de couverture que dans la précédent
 	sort Results/THCvsJIP.sam > Results/THCvsJIP.sorted.sam
 
 	velveth Results/velvetAssemblyWithRef 35 \
-	-reference refJIP.fasta \
+	-reference Results/refJIP.fasta \
 	-short -sam Results/THCvsJIP.sorted.sam
 	
 	velvetg Results/velvetAssemblyWithRef -amos_file yes \
